@@ -1,0 +1,68 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.33.0.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: 637730e011c86dad3ae3772b0e0329b266a010f0abd21395e54f29125e16bdd1
+
+name:           judge
+version:        0.1.0
+description:    Please see the README on GitHub at <https://github.com/ejconlon/judge#readme>
+homepage:       https://github.com/ejconlon/judge#readme
+bug-reports:    https://github.com/ejconlon/judge/issues
+author:         Eric Conlon
+maintainer:     ejconlon@gmail.com
+copyright:      (c) 2020 Eric Conlon
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+
+source-repository head
+  type: git
+  location: https://github.com/ejconlon/judge
+
+library
+  exposed-modules:
+      Judge.Main
+  other-modules:
+      Paths_judge
+  hs-source-dirs:
+      src
+  default-extensions: ConstraintKinds DeriveFunctor DeriveFoldable DeriveGeneric DeriveTraversable DerivingStrategies FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving KindSignatures MultiParamTypeClasses Rank2Types TypeApplications TypeFamilies
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -fno-warn-unused-top-binds
+  build-depends:
+      base >=4.12 && <5
+  default-language: Haskell2010
+
+executable judge-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_judge
+  hs-source-dirs:
+      app
+  default-extensions: ConstraintKinds DeriveFunctor DeriveFoldable DeriveGeneric DeriveTraversable DerivingStrategies FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving KindSignatures MultiParamTypeClasses Rank2Types TypeApplications TypeFamilies
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -fno-warn-unused-top-binds -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.12 && <5
+    , judge
+  default-language: Haskell2010
+
+test-suite judge-test
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      Test.Judge.SimpleTest
+      Paths_judge
+  hs-source-dirs:
+      test
+  default-extensions: ConstraintKinds DeriveFunctor DeriveFoldable DeriveGeneric DeriveTraversable DerivingStrategies FlexibleContexts FlexibleInstances FunctionalDependencies GADTs GeneralizedNewtypeDeriving KindSignatures MultiParamTypeClasses Rank2Types TypeApplications TypeFamilies
+  ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -fno-warn-unused-top-binds -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.12 && <5
+    , judge
+    , tasty
+    , tasty-hunit
+  default-language: Haskell2010

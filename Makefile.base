@@ -1,0 +1,52 @@
+.PHONY: cisetup
+cisetup:
+
+.PHONY: citest
+citest: test
+
+.PHONY: cidocs
+cidocs: docs
+
+.PHONY: cicompress
+cicompress:
+	tar -cvzf /tmp/haddock.tar.gz -C $$(stack path --local-install-root) doc
+
+.PHONY: build
+build:
+	stack build
+
+.PHONY: clean
+clean:
+	stack clean --full
+
+.PHONY: test
+test:
+	stack build --test
+
+.PHONY: ghci
+ghci:
+	stack ghci --test --ghci-options "-ghci-script .ghci-manual"
+
+.PHONY: docs
+docs:
+	stack haddock --no-haddock-deps
+
+.PHONY: deps
+deps:
+	stack build --copy-compiler-tool ghcid hlint hpack stylish-haskell
+
+.PHONY: watch
+watch:
+	stack exec -- ghcid --lint=`stack exec -- which hlint`
+
+.PHONY: format
+format:
+	find . -name '*.hs' | xargs -t stack exec -- stylish-haskell -i
+
+.PHONY: lint
+lint:
+	stack exec -- hlint -i 'Parse error' -i 'Reduce duplication' src
+
+.PHONY: hpack
+hpack:
+	stack exec -- hpack

@@ -1,0 +1,6 @@
+.stack-work/
+dist/
+dist-newstyle/
+*~
+*.swo
+*.swp
