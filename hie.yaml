@@ -1,0 +1,13 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "judge:lib"
+
+    - path: "./app/Main.hs"
+      component: "judge:exe:judge-exe"
+
+    - path: "./app/Paths_judge.hs"
+      component: "judge:exe:judge-exe"
+
+    - path: "./test"
+      component: "judge:test:judge-test"
