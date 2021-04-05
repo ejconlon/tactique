@@ -1,76 +1,43 @@
 module Judge.Rule
-  ( RuleT (..)
+  ( RuleF (..)
+  , RuleT (..)
   , Rule
   , subgoal
   , mismatch
   ) where
 
-import Control.Monad (ap)
 import Control.Monad.Identity (Identity)
 import Control.Monad.Except (MonadError (..))
 import Control.Monad.Morph (MFunctor (..))
 import Control.Monad.State (MonadState (..))
 import Control.Monad.Trans (MonadTrans (..))
-import Judge.Internal (StatePair (..))
+import Control.Monad.Trans.Free (MonadFree (..))
+import Judge.Monads (SuspT)
 
-data RuleT j x s e m a =
-    RuleError !e
-  | RuleState !(s -> StatePair s (RuleT j x s e m a))
-  | RuleEffect (m (RuleT j x s e m a))
-  | RuleSubgoal !j !(x -> RuleT j x s e m a)
-  | RuleMismatch !(x -> RuleT j x s e m a)
-  | RulePure !a
+data RuleF j x a =
+    RuleSubgoal !j !(x -> a)
+  | RuleMismatch !(x -> a)
   deriving (Functor)
+
+newtype RuleT j x s e m a = RuleT
+  { unRuleT :: SuspT (RuleF j x) s e m a
+  } deriving (
+    Functor, Applicative, Monad,
+    MonadState s, MonadError e)
 
 type Rule j x s e a = RuleT j x s e Identity a
 
-instance Functor m => Applicative (RuleT j x s e m) where
-  pure = RulePure
-  (<*>) = ap
-
-instance Functor m => Monad (RuleT j x s e m) where
-  return = pure
-  r0 >>= f = go r0 where
-    go r =
-      case r of
-        RuleError err -> RuleError err
-        RuleState onState -> RuleState (fmap go . onState)
-        RuleEffect eff -> RuleEffect (fmap go eff)
-        RuleSubgoal jdg onSub -> RuleSubgoal jdg (go . onSub)
-        RuleMismatch onMis -> RuleMismatch (go . onMis)
-        RulePure val -> f val
+instance Monad m => MonadFree (RuleF j x) (RuleT j x s e m) where
+  wrap = RuleT . wrap . fmap unRuleT
 
 instance MonadTrans (RuleT j x s e) where
-  lift = RuleEffect . fmap RulePure
+  lift = RuleT . lift
 
 instance MFunctor (RuleT j x s e) where
-  hoist trans = go where
-    go r =
-      case r of
-        RuleError err -> RuleError err
-        RuleState onState -> RuleState (fmap go . onState)
-        RuleEffect eff -> RuleEffect (trans (fmap go eff))
-        RuleSubgoal jdg onSub -> RuleSubgoal jdg (go . onSub)
-        RuleMismatch onMis -> RuleMismatch (go . onMis)
-        RulePure val -> RulePure val
+  hoist trans = RuleT . hoist trans . unRuleT
 
-instance Monad m => MonadState s (RuleT j x s e m) where
-  state f = RuleState (\s -> let (a, !s') = f s in StatePair s' (RulePure a))
+subgoal :: Monad m => j -> RuleT j x s e m x
+subgoal j = wrap (RuleSubgoal j pure)
 
-instance Monad m => MonadError e (RuleT j x s e m) where
-  throwError = RuleError
-  catchError r0 h = go r0 where
-    go r =
-      case r of
-        RuleError err -> h err
-        RuleState onState -> RuleState (fmap go . onState)
-        RuleEffect eff -> RuleEffect (fmap go eff)
-        RuleSubgoal j onSub -> RuleSubgoal j (go . onSub)
-        RuleMismatch onMis -> RuleMismatch (go . onMis)
-        RulePure _ -> r
-
-subgoal :: j -> RuleT j x s e m x
-subgoal j = RuleSubgoal j RulePure
-
-mismatch :: RuleT j x s e m x
-mismatch = RuleMismatch RulePure
+mismatch :: Monad m => RuleT j x s e m x
+mismatch = wrap (RuleMismatch pure)

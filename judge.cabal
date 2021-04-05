@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 56377d56f23c99a51536713f251bc0d5b32fd72124fc324133d3dace87eda35a
+-- hash: 1adf0070b663f10c329552802d47b4bbec43393d2af622d9358dc925622792f2
 
 name:           judge
 version:        0.1.0
@@ -32,8 +32,10 @@ library
       Judge.Internal
       Judge.Interpret
       Judge.Monads
+      Judge.Orphans
       Judge.Proof
       Judge.Rule
+      Judge.Search
       Judge.Tactic
   other-modules:
       Paths_judge
