@@ -15,24 +15,31 @@ description: Please see the README on GitHub at <https://github.com/ejconlon/jud
 
 dependencies:
 - base >= 4.12 && < 5
+- containers
+- free
+- list-t
+- logict
+- mmorph
+- mtl
+- nonempty-containers
+- streaming
+- transformers
 
 default-extensions:
-  - ConstraintKinds
-  - DeriveFunctor
-  - DeriveFoldable
-  - DeriveGeneric
-  - DeriveTraversable
-  - DerivingStrategies
-  - FlexibleContexts
-  - FlexibleInstances
-  - FunctionalDependencies
-  - GADTs
-  - GeneralizedNewtypeDeriving
-  - KindSignatures
-  - MultiParamTypeClasses
-  - Rank2Types
-  - TypeApplications
-  - TypeFamilies
+- BangPatterns
+- DeriveFunctor
+- DeriveFoldable
+- DeriveTraversable
+- DerivingStrategies
+- DerivingVia
+- FlexibleInstances
+- FunctionalDependencies
+- GeneralizedNewtypeDeriving
+- KindSignatures
+- LambdaCase
+- Rank2Types
+- StandaloneDeriving
+- TupleSections
 
 ghc-options:
 - -Wall
@@ -46,17 +53,6 @@ ghc-options:
 
 library:
   source-dirs: src
-
-executables:
-  judge-exe:
-    main:                Main.hs
-    source-dirs:         app
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - judge
 
 tests:
   judge-test:
