@@ -2,7 +2,7 @@ module Judge.Examples.Stlc where
 
 import Control.Monad.State (state)
 import Data.List (find)
-import Judge
+import Judge (Tactic, subgoal, mismatch, rule)
 
 -- Just a very simple version of Simply Typed Lambda Calculus,
 -- augmented with 'Hole' so that we can have
