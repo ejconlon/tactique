@@ -7,5 +7,5 @@ module Judge
   , Tactic
   ) where
 
-import Judge.Rule (RuleT, Rule, subgoal, mismatch)
-import Judge.Tactic (TacticT, Tactic)
+import Judge.Rule (Rule, RuleT, mismatch, subgoal)
+import Judge.Tactic (Tactic, TacticT)

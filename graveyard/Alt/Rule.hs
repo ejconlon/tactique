@@ -8,8 +8,8 @@ module Judge.Alt.Rule
   ) where
 
 import Control.Monad (ap)
+import Control.Monad.Except (ExceptT (..), MonadError (..))
 import Control.Monad.Identity (Identity)
-import Control.Monad.Except (MonadError (..), ExceptT (..))
 import Control.Monad.Morph (MFunctor (..))
 import Control.Monad.State (MonadState (..), StateT (..))
 import Control.Monad.Trans (MonadTrans (..))

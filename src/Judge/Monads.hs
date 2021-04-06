@@ -6,7 +6,7 @@ module Judge.Monads
   , transSuspT
   ) where
 
-import Control.Monad.Except (MonadError (..), ExceptT, runExceptT)
+import Control.Monad.Except (ExceptT, MonadError (..), runExceptT)
 import Control.Monad.Morph (MFunctor (..))
 import Control.Monad.State (MonadState (..), StateT (..))
 import Control.Monad.Trans (MonadTrans (..))

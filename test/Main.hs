@@ -4,13 +4,13 @@ import Control.Applicative (empty)
 import Control.Monad.Except (throwError)
 import Judge
 import Test.Tasty (TestTree, defaultMain, testGroup)
-import Test.Tasty.HUnit ((@?=), testCase)
+import Test.Tasty.HUnit (testCase, (@?=))
 -- import Judge.Examples.Stlc
 import Control.Monad.Identity (Identity (..))
-import ListT (ListT)
-import qualified ListT
 import Control.Monad.Logic.Class (interleave)
 import qualified Data.Sequence as Seq
+import ListT (ListT)
+import qualified ListT
 
 toListT :: [Int] -> ListT Identity Int
 toListT = ListT.fromFoldable

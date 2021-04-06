@@ -8,20 +8,20 @@ module Judge.Proof where
 
 import Control.Applicative (Alternative (..))
 import Control.Monad (MonadPlus (..), void)
-import Control.Monad.Except (MonadError (..), ExceptT (..), runExceptT)
+import Control.Monad.Except (ExceptT (..), MonadError (..), runExceptT)
 import Control.Monad.Identity (Identity)
+import Control.Monad.Logic.Class (MonadLogic (..))
 import Control.Monad.Reader (MonadReader (..), ReaderT (..), asks)
 import Control.Monad.State (MonadState (..), StateT (..), gets, modify')
 import Control.Monad.Trans (MonadTrans (..))
+import Control.Monad.Trans.Free (FreeF (..), FreeT (..), liftF)
 import Control.Monad.Trans.Maybe (MaybeT (..))
-import Control.Monad.Logic.Class (MonadLogic (..))
-import Judge.Internal (StatePair(..))
+import Data.Sequence (Seq (..))
+import Judge.Internal (StatePair (..))
+import Judge.Monads (F (..), Q (..), R (..), lowerQ, runF, runR, subStateR)
+import Judge.Rule (RuleT (..))
 import ListT (ListT (..))
 import qualified ListT
-import Judge.Rule (RuleT (..))
-import Judge.Monads (F (..), Q (..), R (..), lowerQ, runF, runR, subStateR)
-import Data.Sequence (Seq (..))
-import Control.Monad.Trans.Free (FreeF (..), FreeT (..), liftF)
 
 data ProofPos j = ProofPos
   { proofPosIndex :: !Int

@@ -17,10 +17,10 @@ import Control.Monad.State (MonadState (..))
 import Control.Monad.Trans (MonadTrans (..))
 import Data.Maybe (fromMaybe)
 import Data.Sequence (Seq (..))
-import ListT (ListT (..))
-import qualified ListT
 import Judge.Internal.Lists (guardRight, unfoldSeq)
 import Judge.Internal.Orphans ()
+import ListT (ListT (..))
+import qualified ListT
 
 -- | 'RefineT' is a monad supporting all relevant proof script operations.
 -- The parameters are as follows (with mnemonics):

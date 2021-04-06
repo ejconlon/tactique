@@ -5,15 +5,15 @@ module Judge.Alt.Tactic
   , rule
   ) where
 
-import Control.Monad.Identity (Identity (..))
 import Control.Monad.Except (MonadError (..))
+import Control.Monad.Identity (Identity (..))
 import Control.Monad.State (MonadState (..), StateT (..))
 import Control.Monad.Trans (MonadTrans (..))
 import Data.Sequence (Seq)
 import Judge.Alt.Internal (StatePair (..))
-import Judge.Alt.Rule (RuleT (..))
-import Judge.Alt.Result (Result)
 import Judge.Alt.Proof (ProofT (..))
+import Judge.Alt.Result (Result)
+import Judge.Alt.Rule (RuleT (..))
 import ListT (ListT)
 
 newtype TacticT j x s e m a = TacticT { unTacticT :: StateT j (ProofT x s e m) a }

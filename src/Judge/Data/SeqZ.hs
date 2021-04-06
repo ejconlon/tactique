@@ -1,6 +1,10 @@
 -- | A zipper for 'Seq'
+-- Does not support removing elements.
 module Judge.Data.SeqZ
   ( SeqZ (..)
+  , readSeqZ
+  , writeSeqZ
+  , modifySeqZ
   , isFirstSeqZ
   , isLastSeqZ
   , outSeqZ
@@ -14,13 +18,22 @@ module Judge.Data.SeqZ
 import Data.Sequence (Seq (..), (><))
 import qualified Data.Sequence as Seq
 
-data SeqZ a = SeqZ !(Seq a) a !(Seq a) deriving (Eq, Show)
+data SeqZ a = SeqZ !(Seq a) !a !(Seq a) deriving (Eq, Show)
+
+readSeqZ :: SeqZ a -> a
+readSeqZ (SeqZ _ a _) = a
+
+writeSeqZ :: a -> SeqZ a -> SeqZ a
+writeSeqZ = modifySeqZ . const
+
+modifySeqZ :: (a -> a) -> SeqZ a -> SeqZ a
+modifySeqZ f (SeqZ ps a ns) = SeqZ ps (f a) ns
 
 isFirstSeqZ :: SeqZ a -> Bool
-isFirstSeqZ = undefined
+isFirstSeqZ (SeqZ ps _ _) = Seq.null ps
 
 isLastSeqZ :: SeqZ a -> Bool
-isLastSeqZ = undefined
+isLastSeqZ (SeqZ _ _ ns) = Seq.null ns
 
 outSeqZ :: SeqZ a -> Seq a
 outSeqZ (SeqZ ps a ns) = ps >< a :<| ns

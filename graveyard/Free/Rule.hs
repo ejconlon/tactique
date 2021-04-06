@@ -7,8 +7,8 @@ module Judge.Free.Rule
   , mismatch
   ) where
 
-import Control.Monad.Identity (Identity)
 import Control.Monad.Except (MonadError (..))
+import Control.Monad.Identity (Identity)
 import Control.Monad.State (MonadState (..))
 import Control.Monad.Trans (MonadTrans)
 import Control.Monad.Trans.Free (FreeF (..), FreeT (..))

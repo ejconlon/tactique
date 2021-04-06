@@ -16,12 +16,12 @@ import Control.Monad.State (MonadState (..))
 import Control.Monad.Trans (MonadTrans (..))
 import Data.Maybe (fromMaybe)
 import Data.Sequence (Seq (..))
-import ListT (ListT (..))
-import qualified ListT
 import Judge.Alt.Internal (StatePair (..))
-import Judge.Alt.Result (Result (..))
 import Judge.Alt.Lists (guardSuccess, unfoldSeq)
 import Judge.Alt.Orphans ()
+import Judge.Alt.Result (Result (..))
+import ListT (ListT (..))
+import qualified ListT
 
 -- | 'ProofT' is a monad supporting all relevant proof script operations.
 -- The parameters are as follows (with mnemonics):
