@@ -8,6 +8,7 @@ module Judge.Data.NEStack
   , peek
   , pop
   , unpop
+  , modifyTop
   ) where
 
 import qualified Data.Sequence as Seq
@@ -18,6 +19,9 @@ import qualified Data.Sequence.NonEmpty as NESeq
 newtype NEStack a = NEStack
   { unNEStack :: NESeq a
   } deriving (Eq, Show, Functor, Foldable, Traversable)
+
+instance Semigroup (NEStack a) where
+  NEStack s1 <> NEStack s2 = NEStack (s1 <> s2)
 
 isBottom :: NEStack a -> Bool
 isBottom (NEStack (_ :<|| ns)) = Seq.null ns
@@ -36,3 +40,6 @@ pop (NEStack (a :<|| ns)) = (a, fmap NEStack (NESeq.nonEmptySeq ns))
 
 unpop :: a -> Maybe (NEStack a) -> NEStack a
 unpop a = maybe (singleton a) (push a)
+
+modifyTop :: (a -> a) -> NEStack a -> NEStack a
+modifyTop f (NEStack (a :<|| ns)) = NEStack (f a :<|| ns)

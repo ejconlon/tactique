@@ -13,9 +13,9 @@ module Judge.Holes
 import Control.Monad.Identity (Identity (..))
 import Control.Monad.State (MonadState (..), StateT (..))
 import Control.Monad.Trans (MonadTrans (..))
-import Data.Sequence (Seq)
-import qualified Data.Sequence as Seq
-import Judge.Validation (ValidT (..))
+import Data.Sequence.NonEmpty (NESeq)
+import qualified Data.Sequence.NonEmpty as NESeq
+import Judge.Data.Validation (ValidT (..))
 
 class HasHole h x | x -> h where
   fromHole :: h -> x
@@ -36,8 +36,8 @@ instance HasHole h (Cutout h x) where
 fillHoles :: (HasHole h x, Applicative m, Traversable f) => (h -> m x) -> f x -> m (f x)
 fillHoles fill = traverse (\x -> maybe (pure x) fill (matchHole x))
 
-tryFillHoles :: (HasHole h x, Applicative m, Traversable f) => (h -> m (Maybe x)) -> f x -> m (Either (Seq h) (f x))
-tryFillHoles fill = runValidT . fillHoles (\h -> ValidT (fmap (maybe (Left (Seq.singleton h)) Right) (fill h)))
+tryFillHoles :: (HasHole h x, Applicative m, Traversable f) => (h -> m (Maybe x)) -> f x -> m (Either (NESeq h) (f x))
+tryFillHoles fill = runValidT . fillHoles (\h -> ValidT (fmap (maybe (Left (NESeq.singleton h)) Right) (fill h)))
 
 class (HasHole h x, Monad m) => MonadHole h x m | m -> h x where
   newHole :: m h
@@ -46,7 +46,7 @@ newtype HoleT h x m a = HoleT
   { unHoleT :: StateT h m a
   } deriving (Functor, Applicative, Monad, MonadState h)
 
-type HoleM h x a = HoleT h x Identity a
+type HoleM h x = HoleT h x Identity
 
 instance MonadTrans (HoleT h x) where
   lift = HoleT . lift

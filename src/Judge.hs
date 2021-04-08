@@ -1,11 +1,18 @@
 module Judge
-  ( RuleT
+  ( HasHole (..)
+  , RuleT
   , Rule
-  , subgoal
-  , mismatch
   , TacticT
   , Tactic
+  , choosing
+  , interleaving
+  , mismatch
+  , repeating
+  , rule
+  , subgoal
+  , trying
   ) where
 
+import Judge.Holes (HasHole (..))
 import Judge.Rule (Rule, RuleT, mismatch, subgoal)
-import Judge.Tactic (Tactic, TacticT)
+import Judge.Tactic (Tactic, TacticT, choosing, interleaving, repeating, rule, trying)

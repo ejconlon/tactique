@@ -3,8 +3,7 @@ module Judge.Examples.Nat
   ) where
 
 import Control.Monad.Except (throwError)
-import Judge.Rule (Rule, subgoal)
-import Judge.Tactic (Tactic, rule)
+import Judge (HasHole (..), Tactic, rule, subgoal)
 
 newtype NatInt = NatInt
   { unNatInt :: Int
@@ -13,17 +12,23 @@ newtype NatInt = NatInt
 data NatUnary =
     NatUnaryZ
   | NatUnaryS !NatUnary
-  | NatHole
+  | NatHole !Int
   deriving (Eq, Show)
+
+instance HasHole Int NatUnary where
+  fromHole = NatHole
+  matchHole x =
+    case x of
+      NatHole h -> Just h
+      _ -> Nothing
 
 newtype NatError =
   NatErrorNegative Int
   deriving (Eq, Show)
 
-type NatTac a = Tactic NatInt NatUnary () NatError a
-type NatRule a = Rule NatInt NatUnary () NatError a
+type NatTac a = Tactic Int NatInt NatUnary () NatError a
 
-natRule :: NatTac NatUnary
+natRule :: NatTac ()
 natRule = rule $ \(NatInt i) ->
   if i < 0
     then throwError (NatErrorNegative i)

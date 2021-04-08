@@ -1,18 +1,24 @@
 module Judge.Monads
   ( BaseT (..)
   , runBaseT
+  , NonDetT (..)
+  , runNonDetT
+  , unRunNonDetT
   , SuspT (..)
   , runSuspT
   , transSuspT
   ) where
 
-import Control.Monad.Except (ExceptT, MonadError (..), runExceptT)
+import Control.Applicative (Alternative)
+import Control.Monad (MonadPlus)
+import Control.Monad.Except (ExceptT (..), MonadError (..), runExceptT)
 import Control.Monad.Morph (MFunctor (..))
 import Control.Monad.State (MonadState (..), StateT (..))
 import Control.Monad.Trans (MonadTrans (..))
 import Control.Monad.Trans.Free (FreeF (..), FreeT (..), MonadFree (..), transFreeT)
 import Data.Bifunctor (first)
 import Judge.Orphans ()
+import ListT (ListT)
 
 newtype BaseT s e m a = BaseT
   { unBaseT :: StateT s (ExceptT e m) a
@@ -29,16 +35,23 @@ instance MFunctor (BaseT s e) where
 runBaseT :: BaseT s e m a -> s -> m (Either e (a, s))
 runBaseT r s = runExceptT (runStateT (unBaseT r) s)
 
--- unRunR :: Monad m => (s -> m (Either e (a, s))) -> R s e m a
--- unRunR f = do
---   s <- get
---   eas <- lift (f s)
---   case eas of
---     Left e -> throwError e
---     Right (a, s') -> a <$ put s'
+newtype NonDetT e m a = NonDetT
+  { unNonDetT :: ExceptT e (ListT m) a
+  } deriving newtype (
+    Functor, Applicative, Monad,
+    MonadError e, Alternative, MonadPlus)
 
--- subStateR :: Monad m => (s -> t) -> (t -> s -> s) -> R t e m a -> R s e m a
--- subStateR into outOf r = unRunR (\s -> fmap (fmap (fmap (`outOf` s))) (runR r (into s)))
+instance MonadTrans (NonDetT e) where
+  lift = NonDetT . lift . lift
+
+instance MFunctor (NonDetT e) where
+  hoist trans = NonDetT . hoist (hoist trans) . unNonDetT
+
+runNonDetT :: NonDetT e m a -> ListT m (Either e a)
+runNonDetT = runExceptT . unNonDetT
+
+unRunNonDetT :: ListT m (Either e a) -> NonDetT e m a
+unRunNonDetT = NonDetT . ExceptT
 
 newtype SuspT f s e m a = SuspT
   { unSuspT :: FreeT f (BaseT s e m) a
@@ -58,11 +71,3 @@ runSuspT f = fmap (fmap (first (fmap SuspT))) . runBaseT (runFreeT (unSuspT f))
 
 transSuspT :: (Monad m, Functor g) => (forall z. f z -> g z) -> SuspT f s e m a -> SuspT g s e m a
 transSuspT trans = SuspT . transFreeT trans . unSuspT
-
--- unRunF :: (Functor f, Monad m) => (s -> m (Either e (FreeF f a (F f s e m a), s))) -> F f s e m a
--- unRunF g = do
---   s <- get
---   exs <- lift (g s)
---   case exs of
---     Left e -> throwError e
---     Right (x, s') -> put s' *> F (FreeT (pure (fmap unF x)))

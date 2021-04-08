@@ -2,17 +2,25 @@ module Judge.Examples.Stlc where
 
 import Control.Monad.State (state)
 import Data.List (find)
-import Judge (Tactic, subgoal, mismatch, rule)
+import Data.Void (Void)
+import Judge (HasHole (..), Tactic, choosing, mismatch, repeating, rule, subgoal)
 
 -- Just a very simple version of Simply Typed Lambda Calculus,
 -- augmented with 'Hole' so that we can have
 -- incomplete extracts.
 data Term
-  = Hole
+  = Hole !Int
   | Var !String
   | Lam !String !Term
   | Pair !Term !Term
   deriving (Eq, Show)
+
+instance HasHole Int Term where
+  fromHole = Hole
+  matchHole x =
+    case x of
+      Hole h -> Just h
+      _ -> Nothing
 
 -- The type part of simply typed lambda calculus
 data Type
@@ -25,7 +33,7 @@ data Type
 data Judgment = Judgment ![(String, Type)] !Type
   deriving (Eq, Show)
 
-type T a = Tactic Judgment Term String Int a
+type T a = Tactic Int Judgment Term Int Void a
 
 pair :: T ()
 pair = rule $ \case
@@ -57,5 +65,5 @@ auto = do
 jdg :: Judgment
 jdg = Judgment [] (TFun (TVar "a") (TFun (TVar "b") (TPair (TVar "a") (TVar "b"))))
 
-stlcMain :: IO ()
-stlcMain = print (simpleSearch Hole auto jdg 0)
+-- stlcMain :: IO ()
+-- stlcMain = print (simpleSearch Hole auto jdg 0)
