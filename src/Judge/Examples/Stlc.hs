@@ -1,9 +1,11 @@
 module Judge.Examples.Stlc where
 
-import Control.Monad.State (state)
+import Control.Monad.State.Strict (state)
 import Data.List (find)
 import Data.Void (Void)
-import Judge (HasHole (..), Tactic, choosing, mismatch, repeating, rule, subgoal)
+import Judge (DerivEnd, DerivError, HasHole (..), HoleM, MtacT, Order (..), mtacChoose, mtacOnce, mtacRepeat, mtacRule,
+              mtacSearch, ruleMismatch, ruleSubgoal, runHoleM)
+import qualified ListT
 
 -- Just a very simple version of Simply Typed Lambda Calculus,
 -- augmented with 'Hole' so that we can have
@@ -33,37 +35,39 @@ data Type
 data Judgment = Judgment ![(String, Type)] !Type
   deriving (Eq, Show)
 
-type T a = Tactic Int Judgment Term Int Void a
+type StlcM = MtacT Int Judgment Term Int Void (HoleM Int Term)
+type StlcDerivError = DerivError Int Judgment Term Void
+type StlcDeriv = DerivEnd Int Judgment Term
 
-pair :: T ()
-pair = rule $ \case
-  Judgment hys (TPair a b) -> Pair <$> subgoal (Judgment hys a) <*> subgoal (Judgment hys b)
-  _ -> mismatch
+stlcPair :: StlcM ()
+stlcPair = mtacRule $ \case
+  Judgment hys (TPair a b) -> Pair <$> ruleSubgoal (Judgment hys a) <*> ruleSubgoal (Judgment hys b)
+  _ -> ruleMismatch
 
-lam :: T ()
-lam = rule $ \case
+stlcLam :: StlcM ()
+stlcLam = mtacRule $ \case
   Judgment hys (TFun a b) -> do
     name <- state (\i -> (show i, succ i))
-    body <- subgoal (Judgment ((name, a) : hys) b)
+    body <- ruleSubgoal (Judgment ((name, a) : hys) b)
     pure (Lam name body)
-  _ -> mismatch
+  _ -> ruleMismatch
 
-assumption :: T ()
-assumption = rule $ \(Judgment hys a) ->
+stlcAssumption :: StlcM ()
+stlcAssumption = mtacRule $ \(Judgment hys a) ->
   case find (\(_, ty) -> ty == a) hys of
     Just (x, _) -> pure (Var x)
-    Nothing -> mismatch
+    Nothing -> ruleMismatch
 
-auto :: T ()
-auto = do
-    repeating lam
-    choosing
-      [ pair *> auto
-      , assumption
+stlcAuto :: StlcM ()
+stlcAuto = do
+    mtacRepeat DepthOrder stlcLam
+    mtacChoose
+      [ mtacOnce DepthOrder stlcPair *> stlcAuto
+      , mtacOnce DepthOrder stlcAssumption
       ]
 
 jdg :: Judgment
 jdg = Judgment [] (TFun (TVar "a") (TFun (TVar "b") (TPair (TVar "a") (TVar "b"))))
 
--- stlcMain :: IO ()
--- stlcMain = print (simpleSearch Hole auto jdg 0)
+stlcSearch :: Judgment -> [Either StlcDerivError StlcDeriv]
+stlcSearch j = fst (runHoleM (ListT.toList (mtacSearch stlcAuto j 0)) 0)

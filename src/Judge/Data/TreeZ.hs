@@ -18,7 +18,7 @@ module Judge.Data.TreeZ
   , isFirstTreeZ
   , isLastTreeZ
   , inTreeZ
-  , outSeqZ
+  , outTreeZ
   , upTreeZ
   , firstTreeZ
   , lastTreeZ

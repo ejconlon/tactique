@@ -1,9 +1,9 @@
-module Judge.Examples.Nat
-  (
-  ) where
+module Judge.Examples.Nat where
 
 import Control.Monad.Except (throwError)
-import Judge (HasHole (..), Tactic, rule, subgoal)
+import Judge (DerivEnd, DerivError, HasHole (..), HoleM, MtacT, Order (..), mtacRepeat, mtacRule, mtacSearch,
+              ruleSubgoal, runHoleM)
+import qualified ListT
 
 newtype NatInt = NatInt
   { unNatInt :: Int
@@ -26,16 +26,20 @@ newtype NatError =
   NatErrorNegative Int
   deriving (Eq, Show)
 
-type NatTac a = Tactic Int NatInt NatUnary () NatError a
+type NatM = MtacT Int NatInt NatUnary () NatError (HoleM Int NatUnary)
+type NatDerivError = DerivError Int NatInt NatUnary NatError
+type NatDeriv = DerivEnd Int NatInt NatUnary
 
-natRule :: NatTac ()
-natRule = rule $ \(NatInt i) ->
+natRule :: NatM ()
+natRule = mtacRule $ \(NatInt i) ->
   if i < 0
     then throwError (NatErrorNegative i)
     else if i == 0
       then pure NatUnaryZ
-      else NatUnaryS <$> subgoal (NatInt (pred i))
+      else NatUnaryS <$> ruleSubgoal (NatInt (pred i))
 
--- two = NatUnaryS (NatUnaryS NatUnaryZ)
--- expected = Seq.singleton (Right (two, (), Seq.empty))
--- actual = simpleSearch NatHole (repeating natRule) (NatInt 2) (
+natAuto :: NatM ()
+natAuto = mtacRepeat DepthOrder natRule
+
+natSearch :: NatInt -> [Either NatDerivError NatDeriv]
+natSearch j = fst (runHoleM (ListT.toList (mtacSearch natAuto j ())) 0)

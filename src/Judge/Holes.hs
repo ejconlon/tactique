@@ -10,8 +10,9 @@ module Judge.Holes
   , runHoleM
   ) where
 
+import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Identity (Identity (..))
-import Control.Monad.State (MonadState (..), StateT (..))
+import Control.Monad.State.Strict (MonadState (..), StateT (..))
 import Control.Monad.Trans (MonadTrans (..))
 import Data.Sequence.NonEmpty (NESeq)
 import qualified Data.Sequence.NonEmpty as NESeq
@@ -53,6 +54,9 @@ instance MonadTrans (HoleT h x) where
 
 instance (HasHole h x, Enum h, Monad m) => MonadHole h x (HoleT h x m) where
   newHole = state (\h -> (h, succ h))
+
+instance MonadIO m => MonadIO (HoleT h x m) where
+  liftIO = lift . liftIO
 
 runHoleT :: HoleT h x m a -> h -> m (a, h)
 runHoleT = runStateT . unHoleT

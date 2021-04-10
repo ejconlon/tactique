@@ -8,7 +8,6 @@ module Judge.Derivation
   , DerivPos
   , startDeriv
   , derivGoal
-  , derivEndGoal
   , derivZGoal
   ) where
 
@@ -18,6 +17,7 @@ import Judge.Data.TreeZ (RecTree (..), Tree (..), TreeF (..), TreePos, TreeZ, re
 
 data DerivError h j x e =
     DerivCustomError !e
+  | DerivUnevalError !j
   | DerivSolveError !(NESeq (DerivPos h j x, j))
   deriving (Eq, Show)
 
@@ -39,9 +39,6 @@ startDeriv j x hjs = Tree (TreeF (DerivLabel j x) (fmap (fmap Left) hjs))
 
 derivGoal :: DerivTree h j x -> j
 derivGoal (Tree (TreeF (DerivLabel j _) _)) = j
-
-derivEndGoal :: DerivEnd h j x -> j
-derivEndGoal (RecTree (TreeF (DerivLabel j _) _)) = j
 
 derivZGoal :: DerivTreeZ h j x -> (j, Evaluated)
 derivZGoal tz =

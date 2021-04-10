@@ -1,24 +1,18 @@
 module Judge.Monads
   ( BaseT (..)
   , runBaseT
-  , NonDetT (..)
-  , runNonDetT
-  , unRunNonDetT
   , SuspT (..)
   , runSuspT
   , transSuspT
   ) where
 
-import Control.Applicative (Alternative)
-import Control.Monad (MonadPlus)
 import Control.Monad.Except (ExceptT (..), MonadError (..), runExceptT)
 import Control.Monad.Morph (MFunctor (..))
-import Control.Monad.State (MonadState (..), StateT (..))
+import Control.Monad.State.Strict (MonadState (..), StateT (..))
 import Control.Monad.Trans (MonadTrans (..))
 import Control.Monad.Trans.Free (FreeF (..), FreeT (..), MonadFree (..), transFreeT)
 import Data.Bifunctor (first)
 import Judge.Orphans ()
-import ListT (ListT)
 
 newtype BaseT s e m a = BaseT
   { unBaseT :: StateT s (ExceptT e m) a
@@ -34,24 +28,6 @@ instance MFunctor (BaseT s e) where
 
 runBaseT :: BaseT s e m a -> s -> m (Either e (a, s))
 runBaseT r s = runExceptT (runStateT (unBaseT r) s)
-
-newtype NonDetT e m a = NonDetT
-  { unNonDetT :: ExceptT e (ListT m) a
-  } deriving newtype (
-    Functor, Applicative, Monad,
-    MonadError e, Alternative, MonadPlus)
-
-instance MonadTrans (NonDetT e) where
-  lift = NonDetT . lift . lift
-
-instance MFunctor (NonDetT e) where
-  hoist trans = NonDetT . hoist (hoist trans) . unNonDetT
-
-runNonDetT :: NonDetT e m a -> ListT m (Either e a)
-runNonDetT = runExceptT . unNonDetT
-
-unRunNonDetT :: ListT m (Either e a) -> NonDetT e m a
-unRunNonDetT = NonDetT . ExceptT
 
 newtype SuspT f s e m a = SuspT
   { unSuspT :: FreeT f (BaseT s e m) a

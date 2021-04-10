@@ -1,18 +1,40 @@
 module Judge
-  ( HasHole (..)
+  ( DerivEnd
+  , DerivError (..)
+  , DerivLabel (..)
+  , HasHole (..)
+  , HoleM
+  , HoleT (..)
+  , MonadHole (..)
+  , MtacT
+  , RecTree (..)
   , RuleT
-  , Rule
-  , TacticT
-  , Tactic
-  , choosing
-  , interleaving
-  , mismatch
-  , repeating
-  , rule
-  , subgoal
-  , trying
+  , TacT
+  , Order (..)
+  , TreeF (..)
+  , mtacChoose
+  , mtacEvaluate
+  , mtacGoal
+  , mtacNextGoal
+  , mtacNextUnevaluatedGoal
+  , mtacOnce
+  , mtacRepeat
+  , mtacRule
+  , mtacSearch
+  , mtacTry
+  , ruleMismatch
+  , ruleSubgoal
+  , runHoleM
+  , runHoleT
+  , tacGoal
+  , tacRule
+  , tacSubgoal
   ) where
 
-import Judge.Holes (HasHole (..))
-import Judge.Rule (Rule, RuleT, mismatch, subgoal)
-import Judge.Tactic (Tactic, TacticT, choosing, interleaving, repeating, rule, trying)
+import Judge.Data.TreeZ (RecTree (..), TreeF (..))
+import Judge.Derivation (DerivEnd, DerivError (..), DerivLabel (..))
+import Judge.Holes (HasHole (..), HoleM, HoleT (..), MonadHole (..), runHoleM, runHoleT)
+import Judge.Mtac (MtacT, Order (..), mtacChoose, mtacEvaluate, mtacGoal, mtacNextGoal, mtacNextUnevaluatedGoal,
+                   mtacOnce, mtacRepeat, mtacRule, mtacSearch, mtacTry)
+import Judge.Rule (RuleT, ruleMismatch, ruleSubgoal)
+import Judge.Tac (TacT, tacGoal, tacRule, tacSubgoal)
