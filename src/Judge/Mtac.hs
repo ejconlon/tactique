@@ -2,6 +2,7 @@ module Judge.Mtac
   ( MtacT (..)
   , Order (..)
   , mtacSearch
+  , mtacSearchFirst
   , mtacGoal
   , mtacRule
   , mtacEvaluate
@@ -21,8 +22,12 @@ import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Morph (MFunctor (..))
 import Control.Monad.State.Strict (MonadState (..), StateT (..), gets, modify')
 import Control.Monad.Trans (MonadTrans (..))
+import Data.Either (partitionEithers)
 import Data.Foldable (asum)
 import Data.Sequence (Seq (..))
+import qualified Data.Sequence as Seq
+import Data.Sequence.NonEmpty (NESeq)
+import qualified Data.Sequence.NonEmpty as NESeq
 import Judge.Data.TreeZ (breadthTreeZ, depthTreeZ, firstTreeZ, outTreeZ, pruneTree, stateTreeZ)
 import Judge.Derivation (DerivEnd, DerivError (..), DerivTree, DerivTreeZ, Evaluated (..), derivGoal, derivZGoal,
                          startDeriv)
@@ -31,7 +36,7 @@ import Judge.Monads (BaseT (..), runBaseT)
 import Judge.Rule (RuleT)
 import Judge.Tac (TacResT, TacT (..), runTacT, tacRule)
 import ListT (ListT (..))
--- import qualified ListT
+import qualified ListT
 
 data Order = DepthOrder | BreadthOrder deriving (Eq, Show)
 
@@ -97,6 +102,16 @@ mtacSearch m j s = fmap go (runMtacT m (MtacState (MtacGoalStateStart j) s)) whe
           MtacGoalStateUnfocused t -> Right t
           MtacGoalStateFocused tz -> Right (outTreeZ tz)
         either (Left . DerivSolveError) Right (pruneTree t)
+
+mtacSearchFirst :: Monad m => MtacT h j x s e m () -> j -> s -> m (Maybe (Either (NESeq (DerivError h j x e)) (DerivEnd h j x)))
+mtacSearchFirst m j s = fmap go (ListT.toList (mtacSearch m j s)) where
+  go eas =
+    let (ls, rs) = partitionEithers eas
+    in if null rs
+      then if null ls
+        then Nothing
+        else Just (Left (NESeq.unsafeFromSeq (Seq.fromList ls)))
+      else Just (Right (head rs))
 
 mtacRepeat :: Monad m => Order -> MtacT h j x s e m () -> MtacT h j x s e m ()
 mtacRepeat o t = mtacTry (t *> mtacTry (mtacNextUnevaluatedGoal o *> mtacRepeat o t))

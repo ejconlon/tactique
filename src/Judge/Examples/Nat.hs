@@ -1,9 +1,13 @@
-module Judge.Examples.Nat where
+module Judge.Examples.Nat
+  ( NatInt (..)
+  , NatUnary (..)
+  , natSearch
+  ) where
 
 import Control.Monad.Except (throwError)
-import Judge (DerivEnd, DerivError, HasHole (..), HoleM, MtacT, Order (..), mtacRepeat, mtacRule, mtacSearch,
+import Data.Sequence.NonEmpty (NESeq)
+import Judge (DerivEnd, DerivError, HasHoles (..), HoleM, MtacT, Order (..), mtacRepeat, mtacRule, mtacSearchFirst,
               ruleSubgoal, runHoleM)
-import qualified ListT
 
 newtype NatInt = NatInt
   { unNatInt :: Int
@@ -15,12 +19,13 @@ data NatUnary =
   | NatHole !Int
   deriving (Eq, Show)
 
-instance HasHole Int NatUnary where
+instance HasHoles Int NatUnary where
   fromHole = NatHole
-  matchHole x =
-    case x of
-      NatHole h -> Just h
-      _ -> Nothing
+  substHoles f u =
+    case u of
+      NatHole h -> f h
+      NatUnaryS u' -> fmap NatUnaryS (substHoles f u')
+      NatUnaryZ -> pure u
 
 newtype NatError =
   NatErrorNegative Int
@@ -41,5 +46,5 @@ natRule = mtacRule $ \(NatInt i) ->
 natAuto :: NatM ()
 natAuto = mtacRepeat DepthOrder natRule
 
-natSearch :: NatInt -> [Either NatDerivError NatDeriv]
-natSearch j = fst (runHoleM (ListT.toList (mtacSearch natAuto j ())) 0)
+natSearch :: NatInt -> Maybe (Either (NESeq NatDerivError) NatDeriv)
+natSearch j = fst (runHoleM (mtacSearchFirst natAuto j ()) 0)

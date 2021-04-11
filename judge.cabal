@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 3b229ce1ea7c4ddcc3345fc0dcbaf0e86b908ca39a7c3cf07f0af845774b2f1c
+-- hash: 647e5a16176d314cb845f2311f36ad67dbf70ab8d5ac6fa1c935640a75f27e11
 
 name:           judge
 version:        0.1.0
@@ -44,19 +44,17 @@ library
       Paths_judge
   hs-source-dirs:
       src
-  default-extensions: BangPatterns DeriveFunctor DeriveFoldable DeriveTraversable DerivingStrategies DerivingVia FlexibleInstances FunctionalDependencies GeneralizedNewtypeDeriving KindSignatures LambdaCase Rank2Types StandaloneDeriving TupleSections
+  default-extensions: BangPatterns DeriveFunctor DeriveFoldable DeriveTraversable DerivingStrategies FlexibleInstances FunctionalDependencies GeneralizedNewtypeDeriving LambdaCase Rank2Types TupleSections
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -fno-warn-unused-top-binds
   build-depends:
       base >=4.12 && <5
-    , containers
-    , free
-    , list-t
-    , logict
-    , mmorph
-    , mtl
-    , nonempty-containers
-    , streaming
-    , transformers
+    , containers >=0.6 && <0.7
+    , free >=5.1 && <5.2
+    , list-t >=1.0 && <1.1
+    , logict >=0.7 && <0.8
+    , mmorph >=1.1 && <1.2
+    , mtl >=2.2 && <2.3
+    , nonempty-containers >=0.3 && <0.4
   default-language: Haskell2010
 
 test-suite judge-test
@@ -66,20 +64,19 @@ test-suite judge-test
       Paths_judge
   hs-source-dirs:
       test
-  default-extensions: BangPatterns DeriveFunctor DeriveFoldable DeriveTraversable DerivingStrategies DerivingVia FlexibleInstances FunctionalDependencies GeneralizedNewtypeDeriving KindSignatures LambdaCase Rank2Types StandaloneDeriving TupleSections
+  default-extensions: BangPatterns DeriveFunctor DeriveFoldable DeriveTraversable DerivingStrategies FlexibleInstances FunctionalDependencies GeneralizedNewtypeDeriving LambdaCase Rank2Types TupleSections
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wpartial-fields -Wredundant-constraints -fno-warn-unused-top-binds -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       base >=4.12 && <5
-    , containers
-    , free
+    , containers >=0.6 && <0.7
+    , free >=5.1 && <5.2
     , judge
-    , list-t
-    , logict
-    , mmorph
-    , mtl
-    , nonempty-containers
-    , streaming
-    , tasty
-    , tasty-hunit
-    , transformers
+    , list-t >=1.0 && <1.1
+    , logict >=0.7 && <0.8
+    , mmorph >=1.1 && <1.2
+    , mtl >=2.2 && <2.3
+    , nonempty-containers >=0.3 && <0.4
+    , pretty-show >=1.10 && <1.11
+    , tasty >=1.2 && <1.3
+    , tasty-hunit >=0.10 && <0.11
   default-language: Haskell2010

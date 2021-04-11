@@ -1,8 +1,6 @@
 module Judge.Holes
-  ( HasHole (..)
+  ( HasHoles (..)
   , Cutout (..)
-  , fillHoles
-  , tryFillHoles
   , MonadHole (..)
   , HoleT (..)
   , runHoleT
@@ -10,37 +8,40 @@ module Judge.Holes
   , runHoleM
   ) where
 
+import Control.Applicative (Const (..))
 import Control.Monad.IO.Class (MonadIO (..))
 import Control.Monad.Identity (Identity (..))
 import Control.Monad.State.Strict (MonadState (..), StateT (..))
 import Control.Monad.Trans (MonadTrans (..))
+import Data.Sequence (Seq)
+import qualified Data.Sequence as Seq
 import Data.Sequence.NonEmpty (NESeq)
 import qualified Data.Sequence.NonEmpty as NESeq
 import Judge.Data.Validation (ValidT (..))
 
-class HasHole h x | x -> h where
+class HasHoles h x | x -> h where
   fromHole :: h -> x
-  matchHole :: x -> Maybe h
+  substHoles :: Applicative m => (h -> m x) -> x -> m x
+
+  findHoles :: x -> Seq h
+  findHoles = getConst . substHoles (Const . Seq.singleton)
+
+  trySubstHoles :: Applicative m => (h -> m (Maybe x)) -> x -> m (Either (NESeq h) x)
+  trySubstHoles fill = runValidT . substHoles (\h -> ValidT (fmap (maybe (Left (NESeq.singleton h)) Right) (fill h)))
 
 data Cutout h x =
     CutoutHole !h
   | CutoutPiece !x
   deriving (Eq, Show, Functor, Foldable, Traversable)
 
-instance HasHole h (Cutout h x) where
+instance HasHoles h (Cutout h x) where
   fromHole = CutoutHole
-  matchHole x =
-    case x of
-      CutoutHole h -> Just h
-      CutoutPiece _ -> Nothing
+  substHoles f c =
+    case c of
+      CutoutHole h -> f h
+      CutoutPiece _ -> pure c
 
-fillHoles :: (HasHole h x, Applicative m, Traversable f) => (h -> m x) -> f x -> m (f x)
-fillHoles fill = traverse (\x -> maybe (pure x) fill (matchHole x))
-
-tryFillHoles :: (HasHole h x, Applicative m, Traversable f) => (h -> m (Maybe x)) -> f x -> m (Either (NESeq h) (f x))
-tryFillHoles fill = runValidT . fillHoles (\h -> ValidT (fmap (maybe (Left (NESeq.singleton h)) Right) (fill h)))
-
-class (HasHole h x, Monad m) => MonadHole h x m | m -> h x where
+class (HasHoles h x, Monad m) => MonadHole h x m | m -> h x where
   newHole :: m h
 
 newtype HoleT h x m a = HoleT
@@ -52,7 +53,7 @@ type HoleM h x = HoleT h x Identity
 instance MonadTrans (HoleT h x) where
   lift = HoleT . lift
 
-instance (HasHole h x, Enum h, Monad m) => MonadHole h x (HoleT h x m) where
+instance (HasHoles h x, Enum h, Monad m) => MonadHole h x (HoleT h x m) where
   newHole = state (\h -> (h, succ h))
 
 instance MonadIO m => MonadIO (HoleT h x m) where

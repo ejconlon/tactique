@@ -1,11 +1,16 @@
-module Judge.Examples.Stlc where
+module Judge.Examples.Stlc
+  ( Judgment (..)
+  , Type (..)
+  , Term (..)
+  , stlcSearch
+  ) where
 
 import Control.Monad.State.Strict (state)
 import Data.List (find)
+import Data.Sequence.NonEmpty (NESeq)
 import Data.Void (Void)
-import Judge (DerivEnd, DerivError, HasHole (..), HoleM, MtacT, Order (..), mtacChoose, mtacOnce, mtacRepeat, mtacRule,
-              mtacSearch, ruleMismatch, ruleSubgoal, runHoleM)
-import qualified ListT
+import Judge (DerivEnd, DerivError, HasHoles (..), HoleM, MtacT, Order (..), mtacChoose, mtacOnce, mtacRepeat, mtacRule,
+              mtacSearchFirst, ruleMismatch, ruleSubgoal, runHoleM)
 
 -- Just a very simple version of Simply Typed Lambda Calculus,
 -- augmented with 'Hole' so that we can have
@@ -17,12 +22,14 @@ data Term
   | Pair !Term !Term
   deriving (Eq, Show)
 
-instance HasHole Int Term where
+instance HasHoles Int Term where
   fromHole = Hole
-  matchHole x =
+  substHoles f x =
     case x of
-      Hole h -> Just h
-      _ -> Nothing
+      Hole h -> f h
+      Var _ -> pure x
+      Lam n x' -> fmap (Lam n) (substHoles f x')
+      Pair a b -> Pair <$> substHoles f a <*> substHoles f b
 
 -- The type part of simply typed lambda calculus
 data Type
@@ -66,8 +73,5 @@ stlcAuto = do
       , mtacOnce DepthOrder stlcAssumption
       ]
 
-jdg :: Judgment
-jdg = Judgment [] (TFun (TVar "a") (TFun (TVar "b") (TPair (TVar "a") (TVar "b"))))
-
-stlcSearch :: Judgment -> [Either StlcDerivError StlcDeriv]
-stlcSearch j = fst (runHoleM (ListT.toList (mtacSearch stlcAuto j 0)) 0)
+stlcSearch :: Judgment -> Maybe (Either (NESeq StlcDerivError) StlcDeriv)
+stlcSearch j = fst (runHoleM (mtacSearchFirst stlcAuto j 0) 0)

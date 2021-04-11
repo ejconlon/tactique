@@ -9,11 +9,16 @@ module Judge.Derivation
   , startDeriv
   , derivGoal
   , derivZGoal
+  , derivSubst
   ) where
 
+import Control.Monad.Identity (Identity (..))
+import Data.Foldable (toList)
+import qualified Data.Map.Strict as Map
 import Data.Sequence (Seq)
 import Data.Sequence.NonEmpty (NESeq)
 import Judge.Data.TreeZ (RecTree (..), Tree (..), TreeF (..), TreePos, TreeZ, readTreeZ)
+import Judge.Holes (HasHoles (..))
 
 data DerivError h j x e =
     DerivCustomError !e
@@ -46,3 +51,9 @@ derivZGoal tz =
   in case e of
     Left j -> (j, EvaluatedNo)
     Right (Tree (TreeF (DerivLabel j _) _)) -> (j, EvaluatedYes)
+
+derivSubst :: (Ord h, HasHoles h x) => DerivEnd h j x -> Either (NESeq h) x
+derivSubst (RecTree (TreeF (DerivLabel _ x) hts)) = do
+  hxs <- traverse (\(h, t) -> fmap (h,) (derivSubst t)) (toList hts)
+  let hm = Map.fromList hxs
+  runIdentity (trySubstHoles (\h -> Identity (Map.lookup h hm)) x)
