@@ -19,7 +19,9 @@ module Judge
   , mtacNextGoal
   , mtacNextUnevaluatedGoal
   , mtacOnce
+  , mtacRecur
   , mtacRepeat
+  , mtacRestrict
   , mtacRule
   , mtacSearch
   , mtacSearchFirst
@@ -37,6 +39,6 @@ import Judge.Data.TreeZ (RecTree (..), TreeF (..))
 import Judge.Derivation (DerivEnd, DerivError (..), DerivLabel (..), derivSubst)
 import Judge.Holes (HasHoles (..), HoleM, HoleT (..), MonadHole (..), runHoleM, runHoleT)
 import Judge.Mtac (MtacT, Order (..), mtacChoose, mtacEvaluate, mtacGoal, mtacNextGoal, mtacNextUnevaluatedGoal,
-                   mtacOnce, mtacRepeat, mtacRule, mtacSearch, mtacSearchFirst, mtacTry)
+                   mtacOnce, mtacRecur, mtacRepeat, mtacRestrict, mtacRule, mtacSearch, mtacSearchFirst, mtacTry)
 import Judge.Rule (RuleT, ruleMismatch, ruleSubgoal)
 import Judge.Tac (TacT, tacGoal, tacRule, tacSubgoal)

@@ -7,6 +7,8 @@ module Judge.Mtac
   , mtacRule
   , mtacEvaluate
   , mtacTry
+  , mtacRecur
+  , mtacRestrict
   , mtacRepeat
   , mtacOnce
   , mtacNextGoal
@@ -28,7 +30,9 @@ import Data.Sequence (Seq (..))
 import qualified Data.Sequence as Seq
 import Data.Sequence.NonEmpty (NESeq)
 import qualified Data.Sequence.NonEmpty as NESeq
-import Judge.Data.TreeZ (breadthTreeZ, depthTreeZ, firstTreeZ, outTreeZ, pruneTree, stateTreeZ)
+import Data.Traversable (for)
+import Judge.Data.TreeZ (Tree (..), TreeF (..), breadthTreeZ, depthTreeZ, firstTreeZ, outTreeZ, pruneTree, readTreeZ,
+                         stateTreeZ, writeTreeZ)
 import Judge.Derivation (DerivEnd, DerivError (..), DerivTree, DerivTreeZ, Evaluated (..), derivGoal, derivZGoal,
                          startDeriv)
 import Judge.Holes (MonadHole)
@@ -113,11 +117,65 @@ mtacSearchFirst m j s = fmap go (ListT.toList (mtacSearch m j s)) where
         else Just (Left (NESeq.unsafeFromSeq (Seq.fromList ls)))
       else Just (Right (head rs))
 
+askGoalState :: Monad m => MtacT h j x s e m (Either j (DerivTree h j x))
+askGoalState = do
+  mgs <- gets msGoalState
+  let ejt = case mgs of
+        MtacGoalStateStart j -> Left j
+        MtacGoalStateUnfocused t -> Right t
+        MtacGoalStateFocused tz' -> Right (outTreeZ tz')
+  pure ejt
+
+-- | Runs the given mtac for each subgoal and ends focus in the same place.
+mtacRecur :: Monad m => MtacT h j x s e m () -> MtacT h j x s e m ()
+mtacRecur m = go where
+  go = do
+    mgs <- gets msGoalState
+    case mgs of
+      MtacGoalStateStart _ -> empty
+      MtacGoalStateUnfocused t -> do
+        t' <- goTree t
+        setGoalState (MtacGoalStateUnfocused t')
+      MtacGoalStateFocused tz -> do
+        let (_, _, ejt) = readTreeZ tz
+        case ejt of
+          Left _ -> empty
+          Right t -> do
+            t' <- goTree t
+            let tz' = writeTreeZ (Right t') tz
+            setGoalState (MtacGoalStateFocused tz')
+
+  goTree (Tree (TreeF l hjts)) = do
+    hjts' <- for hjts $ \(h, ejt) -> do
+      setGoalState (either MtacGoalStateStart MtacGoalStateUnfocused ejt)
+      m
+      fmap (h,) askGoalState
+    pure (Tree (TreeF l hjts'))
+
+-- | Runs the given mtac in in the context of the derivation tree
+-- rerooted at the current focus.
+mtacRestrict :: Monad m => MtacT h j x s e m () -> MtacT h j x s e m ()
+mtacRestrict m = do
+  mgsStart <- gets msGoalState
+  mgsEnd <- case mgsStart of
+    MtacGoalStateFocused tz -> do
+      let (_, _, ejt) = readTreeZ tz
+          mgsMid = either MtacGoalStateStart MtacGoalStateUnfocused ejt
+      setGoalState mgsMid
+      m
+      ejt' <- askGoalState
+      let tz' = writeTreeZ ejt' tz
+      pure (MtacGoalStateFocused tz')
+    _ -> do
+      m
+      fmap (either MtacGoalStateStart MtacGoalStateUnfocused) askGoalState
+  setGoalState mgsEnd
+
 mtacRepeat :: Monad m => Order -> MtacT h j x s e m () -> MtacT h j x s e m ()
-mtacRepeat o t = mtacTry (t *> mtacTry (mtacNextUnevaluatedGoal o *> mtacRepeat o t))
+mtacRepeat o m = mtacTry (m *> mtacTry (mtacNextUnevaluatedGoal o *> mtacRepeat o m))
 
 mtacOnce :: Monad m => Order -> MtacT h j x s e m () -> MtacT h j x s e m ()
-mtacOnce o t = t *> mtacTry (mtacNextUnevaluatedGoal o)
+mtacOnce o m = m *> mtacTry (mtacNextUnevaluatedGoal o)
 
 mtacGoal :: Monad m => MtacT h j x s e m (j, Evaluated)
 mtacGoal = gets mtacStateGoal

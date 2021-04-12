@@ -9,8 +9,8 @@ import Control.Monad.State.Strict (state)
 import Data.List (find)
 import Data.Sequence.NonEmpty (NESeq)
 import Data.Void (Void)
-import Judge (DerivEnd, DerivError, HasHoles (..), HoleM, MtacT, Order (..), mtacChoose, mtacOnce, mtacRepeat, mtacRule,
-              mtacSearchFirst, ruleMismatch, ruleSubgoal, runHoleM)
+import Judge (DerivEnd, DerivError, HasHoles (..), HoleM, MtacT, mtacChoose, mtacRecur, mtacRule, mtacSearchFirst,
+              ruleMismatch, ruleSubgoal, runHoleM)
 
 -- Just a very simple version of Simply Typed Lambda Calculus,
 -- augmented with 'Hole' so that we can have
@@ -67,10 +67,10 @@ stlcAssumption = mtacRule $ \(Judgment hys a) ->
 
 stlcAuto :: StlcM ()
 stlcAuto = do
-    mtacRepeat DepthOrder stlcLam
     mtacChoose
-      [ mtacOnce DepthOrder stlcPair *> stlcAuto
-      , mtacOnce DepthOrder stlcAssumption
+      [ stlcLam *> mtacRecur stlcAuto
+      , stlcPair *> mtacRecur stlcAuto
+      , stlcAssumption
       ]
 
 stlcSearch :: Judgment -> Maybe (Either (NESeq StlcDerivError) StlcDeriv)
