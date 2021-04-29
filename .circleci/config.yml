@@ -3,7 +3,7 @@ version: 2.1
 parameters:
   project:
     type: string
-    default: "judge"
+    default: "tactique"
   cache_ver:
     type: string
     default: "v3"
