@@ -1,6 +1,6 @@
 -- | It's a non-empty stack. (I don't want to have to remember which end of the Seq is up!)
 -- | This module is meant to be imported qualified.
-module Judge.Data.NEStack
+module Tactique.Data.NEStack
   ( NEStack (..)
   , isBottom
   , singleton

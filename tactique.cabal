@@ -4,16 +4,16 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 647e5a16176d314cb845f2311f36ad67dbf70ab8d5ac6fa1c935640a75f27e11
+-- hash: c385cfa0e6be1038bdb01541f782821faa9b2bcdcd254f8dbb00cad4e6a7bfff
 
-name:           judge
+name:           tactique
 version:        0.1.0
-description:    Please see the README on GitHub at <https://github.com/ejconlon/judge#readme>
-homepage:       https://github.com/ejconlon/judge#readme
-bug-reports:    https://github.com/ejconlon/judge/issues
+description:    Please see the README on GitHub at <https://github.com/ejconlon/tactique#readme>
+homepage:       https://github.com/ejconlon/tactique#readme
+bug-reports:    https://github.com/ejconlon/tactique/issues
 author:         Eric Conlon
 maintainer:     ejconlon@gmail.com
-copyright:      (c) 2020 Eric Conlon
+copyright:      (c) 2021 Eric Conlon
 license:        BSD3
 license-file:   LICENSE
 build-type:     Simple
@@ -22,26 +22,26 @@ extra-source-files:
 
 source-repository head
   type: git
-  location: https://github.com/ejconlon/judge
+  location: https://github.com/ejconlon/tactique
 
 library
   exposed-modules:
-      Judge
-      Judge.Data.NEStack
-      Judge.Data.SeqZ
-      Judge.Data.TreeZ
-      Judge.Data.Validation
-      Judge.Derivation
-      Judge.Examples.Nat
-      Judge.Examples.Stlc
-      Judge.Holes
-      Judge.Monads
-      Judge.Mtac
-      Judge.Orphans
-      Judge.Rule
-      Judge.Tac
+      Tactique
+      Tactique.Data.NEStack
+      Tactique.Data.SeqZ
+      Tactique.Data.TreeZ
+      Tactique.Data.Validation
+      Tactique.Derivation
+      Tactique.Examples.Nat
+      Tactique.Examples.Stlc
+      Tactique.Holes
+      Tactique.Monads
+      Tactique.Mtac
+      Tactique.Orphans
+      Tactique.Rule
+      Tactique.Tac
   other-modules:
-      Paths_judge
+      Paths_tactique
   hs-source-dirs:
       src
   default-extensions: BangPatterns DeriveFunctor DeriveFoldable DeriveTraversable DerivingStrategies FlexibleInstances FunctionalDependencies GeneralizedNewtypeDeriving LambdaCase Rank2Types TupleSections
@@ -57,11 +57,11 @@ library
     , nonempty-containers >=0.3 && <0.4
   default-language: Haskell2010
 
-test-suite judge-test
+test-suite tactique-test
   type: exitcode-stdio-1.0
   main-is: Main.hs
   other-modules:
-      Paths_judge
+      Paths_tactique
   hs-source-dirs:
       test
   default-extensions: BangPatterns DeriveFunctor DeriveFoldable DeriveTraversable DerivingStrategies FlexibleInstances FunctionalDependencies GeneralizedNewtypeDeriving LambdaCase Rank2Types TupleSections
@@ -70,13 +70,13 @@ test-suite judge-test
       base >=4.12 && <5
     , containers >=0.6 && <0.7
     , free >=5.1 && <5.2
-    , judge
     , list-t >=1.0 && <1.1
     , logict >=0.7 && <0.8
     , mmorph >=1.1 && <1.2
     , mtl >=2.2 && <2.3
     , nonempty-containers >=0.3 && <0.4
     , pretty-show >=1.10 && <1.11
+    , tactique
     , tasty >=1.2 && <1.3
     , tasty-hunit >=0.10 && <0.11
   default-language: Haskell2010

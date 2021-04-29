@@ -1,4 +1,4 @@
-module Judge.Monads
+module Tactique.Monads
   ( BaseT (..)
   , runBaseT
   , SuspT (..)
@@ -12,7 +12,7 @@ import Control.Monad.State.Strict (MonadState (..), StateT (..))
 import Control.Monad.Trans (MonadTrans (..))
 import Control.Monad.Trans.Free (FreeF (..), FreeT (..), MonadFree (..), transFreeT)
 import Data.Bifunctor (first)
-import Judge.Orphans ()
+import Tactique.Orphans ()
 
 newtype BaseT s e m a = BaseT
   { unBaseT :: StateT s (ExceptT e m) a

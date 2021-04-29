@@ -1,4 +1,4 @@
-module Judge.Data.Validation
+module Tactique.Data.Validation
   ( ValidT (..)
   , Valid
   , runValid

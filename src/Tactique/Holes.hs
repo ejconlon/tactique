@@ -1,4 +1,4 @@
-module Judge.Holes
+module Tactique.Holes
   ( HasHoles (..)
   , Cutout (..)
   , MonadHole (..)
@@ -17,7 +17,7 @@ import Data.Sequence (Seq)
 import qualified Data.Sequence as Seq
 import Data.Sequence.NonEmpty (NESeq)
 import qualified Data.Sequence.NonEmpty as NESeq
-import Judge.Data.Validation (ValidT (..))
+import Tactique.Data.Validation (ValidT (..))
 
 class HasHoles h x | x -> h where
   fromHole :: h -> x

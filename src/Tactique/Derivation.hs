@@ -1,4 +1,4 @@
-module Judge.Derivation
+module Tactique.Derivation
   ( DerivError (..)
   , Evaluated (..)
   , DerivLabel (..)
@@ -17,8 +17,8 @@ import Data.Foldable (toList)
 import qualified Data.Map.Strict as Map
 import Data.Sequence (Seq)
 import Data.Sequence.NonEmpty (NESeq)
-import Judge.Data.TreeZ (RecTree (..), Tree (..), TreeF (..), TreePos, TreeZ, readTreeZ)
-import Judge.Holes (HasHoles (..))
+import Tactique.Data.TreeZ (RecTree (..), Tree (..), TreeF (..), TreePos, TreeZ, readTreeZ)
+import Tactique.Holes (HasHoles (..))
 
 data DerivError h j x e =
     DerivCustomError !e

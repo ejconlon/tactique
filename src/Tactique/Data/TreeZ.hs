@@ -1,6 +1,6 @@
 -- | Labeled multi-way trees and zipper for them.
 -- Zipper does not support removing elements.
-module Judge.Data.TreeZ
+module Tactique.Data.TreeZ
   ( TreeF (..)
   , Tree (..)
   , isEmptyTree
@@ -36,11 +36,11 @@ import Data.Sequence (Seq (..))
 import qualified Data.Sequence as Seq
 import Data.Sequence.NonEmpty (NESeq)
 import qualified Data.Sequence.NonEmpty as NESeq
-import Judge.Data.NEStack (NEStack)
-import qualified Judge.Data.NEStack as NEStack
-import Judge.Data.SeqZ (SeqZ, afterSeqZ, beforeSeqZ, firstSeqZ, inSeqZ, isFirstSeqZ, isLastSeqZ, lastSeqZ, outSeqZ,
-                        readSeqZ, rewindSeqZ, stateSeqZ)
-import Judge.Data.Validation (invalid, runValid)
+import Tactique.Data.NEStack (NEStack)
+import qualified Tactique.Data.NEStack as NEStack
+import Tactique.Data.SeqZ (SeqZ, afterSeqZ, beforeSeqZ, firstSeqZ, inSeqZ, isFirstSeqZ, isLastSeqZ, lastSeqZ, outSeqZ,
+                           readSeqZ, rewindSeqZ, stateSeqZ)
+import Tactique.Data.Validation (invalid, runValid)
 
 data TreeF x y a =
     TreeF !x !(Seq (y, a))

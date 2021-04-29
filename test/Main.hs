@@ -1,14 +1,14 @@
 module Main (main) where
 
-import Judge (derivSubst)
-import Judge.Examples.Nat (NatInt (..), NatUnary (..), natSearch)
-import Judge.Examples.Stlc (Judgment (..), Term (..), Type (..), stlcSearch)
+import Tactique (derivSubst)
+import Tactique.Examples.Nat (NatInt (..), NatUnary (..), natSearch)
+import Tactique.Examples.Stlc (Judgment (..), Term (..), Type (..), stlcSearch)
 import Test.Tasty (TestTree, defaultMain, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))
 import Text.Show.Pretty (ppShow)
 
 tests :: TestTree
-tests = testGroup "judge"
+tests = testGroup "tactique"
   [ testCase "nat" $ do
       let twoInt = NatInt 2
           twoUnary = NatUnaryS (NatUnaryS NatUnaryZ)

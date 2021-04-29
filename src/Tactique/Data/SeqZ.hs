@@ -1,6 +1,6 @@
 -- | A zipper for 'Seq'
 -- Does not support removing elements.
-module Judge.Data.SeqZ
+module Tactique.Data.SeqZ
   ( SeqZ (..)
   , readSeqZ
   , writeSeqZ

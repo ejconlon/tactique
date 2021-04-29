@@ -1,4 +1,4 @@
-module Judge.Examples.Nat
+module Tactique.Examples.Nat
   ( NatInt (..)
   , NatUnary (..)
   , natSearch
@@ -6,8 +6,8 @@ module Judge.Examples.Nat
 
 import Control.Monad.Except (throwError)
 import Data.Sequence.NonEmpty (NESeq)
-import Judge (DerivEnd, DerivError, HasHoles (..), HoleM, MtacT, Order (..), mtacRepeat, mtacRule, mtacSearchFirst,
-              ruleSubgoal, runHoleM)
+import Tactique (DerivEnd, DerivError, HasHoles (..), HoleM, MtacT, Order (..), mtacRepeat, mtacRule, mtacSearchFirst,
+                 ruleSubgoal, runHoleM)
 
 newtype NatInt = NatInt
   { unNatInt :: Int

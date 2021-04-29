@@ -1,4 +1,4 @@
-module Judge.Mtac
+module Tactique.Mtac
   ( MtacT (..)
   , Order (..)
   , mtacSearch
@@ -31,16 +31,16 @@ import qualified Data.Sequence as Seq
 import Data.Sequence.NonEmpty (NESeq)
 import qualified Data.Sequence.NonEmpty as NESeq
 import Data.Traversable (for)
-import Judge.Data.TreeZ (Tree (..), TreeF (..), breadthTreeZ, depthTreeZ, firstTreeZ, outTreeZ, pruneTree, readTreeZ,
-                         stateTreeZ, writeTreeZ)
-import Judge.Derivation (DerivEnd, DerivError (..), DerivTree, DerivTreeZ, Evaluated (..), derivGoal, derivZGoal,
-                         startDeriv)
-import Judge.Holes (MonadHole)
-import Judge.Monads (BaseT (..), runBaseT)
-import Judge.Rule (RuleT)
-import Judge.Tac (TacResT, TacT (..), runTacT, tacRule)
 import ListT (ListT (..))
 import qualified ListT
+import Tactique.Data.TreeZ (Tree (..), TreeF (..), breadthTreeZ, depthTreeZ, firstTreeZ, outTreeZ, pruneTree, readTreeZ,
+                            stateTreeZ, writeTreeZ)
+import Tactique.Derivation (DerivEnd, DerivError (..), DerivTree, DerivTreeZ, Evaluated (..), derivGoal, derivZGoal,
+                            startDeriv)
+import Tactique.Holes (MonadHole)
+import Tactique.Monads (BaseT (..), runBaseT)
+import Tactique.Rule (RuleT)
+import Tactique.Tac (TacResT, TacT (..), runTacT, tacRule)
 
 data Order = DepthOrder | BreadthOrder deriving (Eq, Show)
 

@@ -1,4 +1,4 @@
-module Judge.Examples.Stlc
+module Tactique.Examples.Stlc
   ( Judgment (..)
   , Type (..)
   , Term (..)
@@ -9,8 +9,8 @@ import Control.Monad.State.Strict (state)
 import Data.List (find)
 import Data.Sequence.NonEmpty (NESeq)
 import Data.Void (Void)
-import Judge (DerivEnd, DerivError, HasHoles (..), HoleM, MtacT, mtacChoose, mtacRecur, mtacRule, mtacSearchFirst,
-              ruleMismatch, ruleSubgoal, runHoleM)
+import Tactique (DerivEnd, DerivError, HasHoles (..), HoleM, MtacT, mtacChoose, mtacRecur, mtacRule, mtacSearchFirst,
+                 ruleMismatch, ruleSubgoal, runHoleM)
 
 -- Just a very simple version of Simply Typed Lambda Calculus,
 -- augmented with 'Hole' so that we can have

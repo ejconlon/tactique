@@ -1,4 +1,4 @@
-module Judge.Rule
+module Tactique.Rule
   ( RuleF (..)
   , RuleT (..)
   , ruleSubgoal
@@ -13,8 +13,8 @@ import Control.Monad.State.Strict (MonadState (..))
 import Control.Monad.Trans (MonadTrans (..))
 import Control.Monad.Trans.Free (FreeF (..), MonadFree (..))
 import Data.Sequence (Seq (..))
-import Judge.Holes (MonadHole (..), fromHole)
-import Judge.Monads (SuspT, runSuspT)
+import Tactique.Holes (MonadHole (..), fromHole)
+import Tactique.Monads (SuspT, runSuspT)
 
 data RuleF j x a =
     RuleSubgoal !j !(x -> a)

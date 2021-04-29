@@ -1,6 +1,6 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Judge.Tac
+module Tactique.Tac
   ( TacSubgoals
   , TacT (..)
   , TacResT
@@ -23,11 +23,11 @@ import Control.Monad.Trans (MonadTrans (..))
 import Control.Monad.Writer.Strict (MonadWriter (..), WriterT (..))
 import Data.Sequence (Seq (..))
 import qualified Data.Sequence as Seq
-import Judge.Holes (MonadHole)
-import Judge.Monads (BaseT (..), runBaseT)
-import Judge.Rule (RuleT (..), runRuleT)
 import ListT (ListT (..))
 import qualified ListT
+import Tactique.Holes (MonadHole)
+import Tactique.Monads (BaseT (..), runBaseT)
+import Tactique.Rule (RuleT (..), runRuleT)
 
 type TacSubgoals h j = Seq (h, j)
 
