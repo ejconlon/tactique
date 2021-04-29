@@ -1,4 +1,4 @@
-# judge
+# tactique
 
 A proof search and construction framework (based on [refinery](https://hackage.haskell.org/package/refinery))
 

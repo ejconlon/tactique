@@ -1,7 +1,7 @@
 cradle:
   stack:
     - path: "./src"
-      component: "judge:lib"
+      component: "tactique:lib"
 
     - path: "./test"
-      component: "judge:test:judge-test"
+      component: "tactique:test:tactique-test"
