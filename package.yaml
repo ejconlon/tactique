@@ -59,6 +59,5 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - tactique
-    - pretty-show >= 1.10 && < 1.11
     - tasty >= 1.2 && < 1.5
     - tasty-hunit >= 0.10 && < 0.11

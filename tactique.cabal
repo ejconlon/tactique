@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: aa609a6249e6725f93fd6eeef80af1886db0a3c92c9b03bea8d2c6f7aa3748c9
+-- hash: ad8ce81f05a425cf3afc5dec45fccb91d4f4a89a5c288274450107e1442db309
 
 name:           tactique
 version:        0.1.0
@@ -97,7 +97,6 @@ test-suite tactique-test
     , mmorph ==1.1.*
     , mtl ==2.2.*
     , nonempty-containers ==0.3.*
-    , pretty-show ==1.10.*
     , tactique
     , tasty >=1.2 && <1.5
     , tasty-hunit ==0.10.*

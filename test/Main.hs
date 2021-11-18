@@ -5,7 +5,6 @@ import Tactique.Examples.Nat (NatInt (..), NatUnary (..), natSearch)
 import Tactique.Examples.Stlc (Judgment (..), Term (..), Type (..), stlcSearch)
 import Test.Tasty (TestTree, defaultMain, testGroup)
 import Test.Tasty.HUnit (testCase, (@?=))
-import Text.Show.Pretty (ppShow)
 
 tests :: TestTree
 tests = testGroup "tactique"
@@ -14,7 +13,7 @@ tests = testGroup "tactique"
           twoUnary = NatUnaryS (NatUnaryS NatUnaryZ)
       case natSearch twoInt of
         Nothing -> fail "No result"
-        Just (Left errs) -> fail ("Bad: " <> ppShow errs)
+        Just (Left errs) -> fail ("Bad: " <> show errs)
         Just (Right deriv) -> do
           let expected = Right twoUnary
               actual = derivSubst deriv
@@ -24,7 +23,7 @@ tests = testGroup "tactique"
           tm = Lam "0" (Lam "1" (Pair (Var "0") (Var "1")))
       case stlcSearch tyJdg of
         Nothing -> fail "No result"
-        Just (Left errs) -> fail ("Bad: " <> ppShow errs)
+        Just (Left errs) -> fail ("Bad: " <> show errs)
         Just (Right deriv) -> do
           let expected = Right tm
               actual = derivSubst deriv
